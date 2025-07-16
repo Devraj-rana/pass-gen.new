@@ -39,6 +39,11 @@ export default function Home() {
   const [aiResult, setAiResult] = useState<EnhancePasswordOutput | null>(null);
   const [isAiLoading, setIsAiLoading] = useState(false);
   const { toast } = useToast();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const generatePassword = useCallback(() => {
     const charSets = {
@@ -79,8 +84,10 @@ export default function Home() {
   }, [length, options]);
 
   useEffect(() => {
-    generatePassword();
-  }, [length, options, generatePassword]);
+    if (isMounted) {
+      generatePassword();
+    }
+  }, [length, options, generatePassword, isMounted]);
 
   useEffect(() => {
     let score = 0;
@@ -155,6 +162,10 @@ export default function Home() {
     return "bg-red-500";
   }
 
+  if (!isMounted) {
+    return null; // Or a loading spinner
+  }
+
   return (
     <div className="flex min-h-screen w-full flex-col items-center justify-center p-4 sm:p-6 md:p-8">
       <header className="mb-8 text-center">
@@ -186,7 +197,7 @@ export default function Home() {
                   <Label>Strength</Label>
                   <span className="text-sm font-medium">{strengthLabel}</span>
                 </div>
-                <Progress value={strength} className="h-3" indicatorClassName={getStrengthColor()} />
+                <Progress value={strength} className="h-3" getIndicatorClassName={getStrengthColor} />
               </div>
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
@@ -270,7 +281,7 @@ export default function Home() {
                 </div>
                 <div className="w-full space-y-2">
                     <Label>Strength Score</Label>
-                    <Progress value={aiResult.strengthScore * 100} className="h-3" indicatorClassName="bg-green-500" />
+                    <Progress value={aiResult.strengthScore * 100} className="h-3" getIndicatorClassName={() => 'bg-green-500'} />
                 </div>
                 <div className="w-full space-y-2">
                     <Label>Explanation</Label>
