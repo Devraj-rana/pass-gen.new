@@ -11,7 +11,7 @@ import { Progress } from "@/components/ui/progress";
 import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Check, ClipboardCopy, Loader2, RefreshCcw, Sparkles } from "lucide-react";
+import { Check, ClipboardCopy, Loader2, RefreshCcw, Sparkles, Eye, EyeOff } from "lucide-react";
 
 type PasswordOptions = {
   uppercase: boolean;
@@ -35,6 +35,7 @@ export default function Home() {
   const [isAiCopied, setIsAiCopied] = useState(false);
   
   const [aiPassword, setAiPassword] = useState("");
+  const [showAiPassword, setShowAiPassword] = useState(false);
   const [aiResult, setAiResult] = useState<EnhancePasswordOutput | null>(null);
   const [isAiLoading, setIsAiLoading] = useState(false);
   const { toast } = useToast();
@@ -226,14 +227,19 @@ export default function Home() {
             </CardHeader>
             <CardContent>
               <div className="flex items-center space-x-2">
-                  <Input 
-                    placeholder="Enter a password to enhance..." 
-                    value={aiPassword}
-                    onChange={(e) => setAiPassword(e.target.value)}
-                    className="h-11"
-                    type="password"
-                  />
-                  <Button onClick={handleAiEnhance} disabled={isAiLoading} className="glow-primary h-11">
+                  <div className="relative flex-grow">
+                    <Input 
+                      placeholder="Enter a password to enhance..." 
+                      value={aiPassword}
+                      onChange={(e) => setAiPassword(e.target.value)}
+                      className="h-11 pr-12"
+                      type={showAiPassword ? "text" : "password"}
+                    />
+                    <Button variant="ghost" size="icon" className="absolute right-2 top-1/2 -translate-y-1/2 h-9 w-9" onClick={() => setShowAiPassword(prev => !prev)} aria-label="Toggle password visibility">
+                        {showAiPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                    </Button>
+                  </div>
+                  <Button onClick={handleAiEnhance} disabled={isAiLoading} className="glow-primary h-11 shrink-0">
                     {isAiLoading ? (
                         <Loader2 className="h-5 w-5 animate-spin" />
                     ) : (
